@@ -214,15 +214,11 @@ const updateArticle = async (articleId, updateData, userId, userRole) => {
 /**
  * Delete an article
  * @param {string} articleId - Article ID
+ * @param {string} userId - Current user ID
  * @param {string} userRole - Current user role
  * @returns {Promise<void>}
  */
-const deleteArticle = async (articleId, userRole) => {
-  // Only admin can delete articles
-  if (userRole !== 'ADMIN') {
-    throw new AppError('Only administrators can delete articles', 403, 'FORBIDDEN');
-  }
-
+const deleteArticle = async (articleId, userId, userRole) => {
   // Check if article exists
   const article = await prisma.article.findUnique({
     where: { id: articleId },
@@ -230,6 +226,11 @@ const deleteArticle = async (articleId, userRole) => {
 
   if (!article) {
     throw new AppError('Article not found', 404, 'NOT_FOUND');
+  }
+
+  // Check permissions: admin can delete any article, editor can delete their own
+  if (userRole !== 'ADMIN' && article.authorId !== userId) {
+    throw new AppError('You do not have permission to delete this article', 403, 'FORBIDDEN');
   }
 
   // Delete article

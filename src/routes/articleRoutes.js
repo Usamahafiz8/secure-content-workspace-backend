@@ -35,7 +35,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate,
-  authorize('ADMIN'),
+  checkArticleOwner(),
   articleController.deleteArticle
 );
 

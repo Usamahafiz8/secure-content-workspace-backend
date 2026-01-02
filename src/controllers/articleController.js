@@ -89,7 +89,7 @@ const updateArticle = async (req, res, next) => {
  */
 const deleteArticle = async (req, res, next) => {
   try {
-    await articleService.deleteArticle(req.params.id, req.user.role);
+    await articleService.deleteArticle(req.params.id, req.user.id, req.user.role);
 
     res.status(200).json({
       success: true,
